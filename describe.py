@@ -2,6 +2,20 @@ import pandas as pd
 import sys
 import math
 
+def get_numerical_features(data) :
+    numerical_indexes = []
+    for i in range(len(data.columns)) :
+        if all(isinstance(value, (int, float)) and not isinstance(value, bool) for value in data.iloc[:, i]) :
+            numerical_indexes.append(i)
+    return numerical_indexes
+
+def normalize_z_score(vector) :
+    clean_list = vector.dropna()
+    mean_num = ft_mean(clean_list)
+    std_num = ft_standard_deviation(clean_list)
+    norm_vector = [(x - mean_num)/std_num for x in clean_list]
+    return norm_vector
+
 def ft_mean(num_list) :
     clean_list = num_list.dropna()
     sum = clean_list.sum()
@@ -58,13 +72,6 @@ class Describe() :
     def __init__(self, df) :
         self.df = df
  
-    def get_numerical_features(self) :
-        numerical_indexes = []
-        for i in range(len(self.df.columns)) :
-            if all(isinstance(value, (int, float)) and not isinstance(value, bool) for value in self.df.iloc[:, i]) :
-                numerical_indexes.append(i)
-        return numerical_indexes
-
     def count(self, list_feature) :
         print(f"{'Count':<10}", end="")
         y = 0
@@ -124,7 +131,7 @@ class Describe() :
     
     def describe(self) :
         columns_list = self.df.columns
-        numerical_features_list = self.get_numerical_features()
+        numerical_features_list = get_numerical_features(self.df)
         print("          ", end="")
         for i in numerical_features_list :
             print("  ", f"{columns_list[i]:>10}", end="")
@@ -143,8 +150,8 @@ def main() :
     with open(sys.argv[1]) as f :
         data = pd.read_csv(f)
     test = Describe(data)
-    data.describe()
-    # test.describe()
+    # data.describe()
+    test.describe()
 
 if __name__ == "__main__" :
     main()
