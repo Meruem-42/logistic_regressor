@@ -6,7 +6,7 @@ from describe import normalize_z_score
 
 def histogram(data) :
     df_long = data.melt(var_name="Feature", value_name="Value")
-    fig = px.histogram(df_long, x="Value", color="Feature", nbins=20, barmode="overlay", opacity=1)
+    fig = px.histogram(df_long, x="Value", color="Feature", nbins=20, barmode="overlay", opacity=0.2)
     fig.show()
     
 
