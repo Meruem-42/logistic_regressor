@@ -49,24 +49,24 @@ def ft_max(num_list) :
             max_num = elem
     return max_num
 
-def ft_first_percentile(num_list) :
-    clean_list = num_list.dropna()
+def ft_percentile(num_list, percentile) :
+    clean_list = num_list.dropna().sort_values()
     count_num = ft_count(clean_list)
-    first_pct_id = round(count_num*(1/4) - 1)
-    return (clean_list[first_pct_id])
+    position = percentile/100 * (count_num - 1)
+    if(percentile == 100) :
+        return (clean_list[count_num - 1])
+    lower_id = int(position)
+    lower_num = clean_list.iloc[lower_id]
+    upper_id = lower_id + 1
+    if upper_id >= count_num :
+        return lower_num
+    upper_num = clean_list.iloc[upper_id]
+    rest = position - lower_id
+    result_perc = lower_num + rest * (upper_num - lower_num)
+    return (result_perc)
 
 def ft_median(num_list) :
-    clean_list = num_list.dropna()
-    count_num = ft_count(clean_list)
-    median_id = round(count_num*(2/4) - 1)
-    return (clean_list[median_id])
-
-def ft_third_percentile(num_list) :
-    clean_list = num_list.dropna()
-    count_num = ft_count(clean_list)
-    third_pct_id = round(count_num*(3/4) - 1)
-    return (clean_list[third_pct_id])
-
+    return ft_percentile(num_list, 50)
 
 class Describe() :
     def __init__(self, df) :
@@ -111,7 +111,7 @@ class Describe() :
     def first_percentile(self, list_feature) :
         print(f"{'25%':<10}", end="")
         for i in list_feature :
-            value_num = ft_first_percentile(self.df.iloc[:, i])
+            value_num = ft_percentile(self.df.iloc[:, i], 25)
             print("  ", f"{str(value_num)[:10]:>10}", end="")
         print()
 
@@ -125,7 +125,7 @@ class Describe() :
     def third_percentile(self, list_feature) :
         print(f"{'75%':<10}", end="")
         for i in list_feature :
-            value_num = ft_third_percentile(self.df.iloc[:, i])
+            value_num = ft_percentile(self.df.iloc[:, i], 75)
             print("  ", f"{str(value_num)[:10]:>10}", end="")
         print()    
     
@@ -150,7 +150,7 @@ def main() :
     with open(sys.argv[1]) as f :
         data = pd.read_csv(f)
     test = Describe(data)
-    # data.describe()
+    print(data.describe())
     test.describe()
 
 if __name__ == "__main__" :
